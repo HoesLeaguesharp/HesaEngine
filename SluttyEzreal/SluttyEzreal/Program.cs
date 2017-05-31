@@ -91,8 +91,10 @@ namespace SluttyEzreal
         /// </summary>
         private static void Game_OnTick()
         {
+            Main.KillSteal();
             switch (Orb.ActiveMode)
             {
+
                 case Orbwalker.OrbwalkingMode.LastHit:
                     break;
                 case Orbwalker.OrbwalkingMode.LaneClear:

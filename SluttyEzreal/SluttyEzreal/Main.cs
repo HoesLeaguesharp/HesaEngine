@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using HesaEngine.SDK;
+using HesaEngine.SDK.Enums;
 using HesaEngine.SDK.GameObjects;
 
 namespace SluttyEzreal
@@ -9,6 +10,14 @@ namespace SluttyEzreal
         public static AIHeroClient Player = ObjectManager.Me;
 
 
+
+        public static void CastSkill(this Spell spell, Obj_AI_Base target, HitChance hChance)
+        {
+            var pred = spell.GetPrediction(target);
+            if (pred.Hitchance >= hChance)
+                spell.Cast(pred.CastPosition);
+        }
+
         /// <summary>
         /// Performs Combo
         /// </summary>
@@ -16,26 +25,32 @@ namespace SluttyEzreal
         {
             var targetSelect = TargetSelector.GetTarget(SpellManager.Q.Range, TargetSelector.DamageType.Physical);
 
+
+            SpellManager.Q.CastSkill(targetSelect, HitChance.High);
             if (!targetSelect.IsValidTarget() || Player.IsWindingUp)
                 return;
 
             if (Config.comboMenu.GetCheckbox("useQ") && SpellManager.Q.IsReady())
             {
                 if (Player.Distance(targetSelect) > Player.AttackRange)
-                    SpellManager.Q.Cast(targetSelect);
+                    SpellManager.Q.CastSkill(targetSelect, HitChance.High);
             }
 
             if (Config.comboMenu.GetCheckbox("useWA"))
             {
                 foreach (var hero in Player.GetAlliesInRange(SpellManager.W.Range))
                 {
-                    SpellManager.W.Cast(hero);
+                    SpellManager.W.CastSkill(targetSelect, HitChance.High);
                 }
             }
 
             if (Config.comboMenu.GetCheckbox("useW") && SpellManager.W.IsReady())
             {
-                SpellManager.W.Cast(targetSelect);
+                SpellManager.W.CastSkill(targetSelect, HitChance.High);
+            }
+            if (Config.comboMenu.GetCheckbox("useR"))
+            {
+                SpellManager.Q.CastIfWillHit(targetSelect, Config.comboMenu.GetSlider("rCount"));
             }
         }
 
@@ -70,12 +85,12 @@ namespace SluttyEzreal
 
             if (Config.harassMenu.GetCheckbox("useQh") && SpellManager.Q.IsReady())
             {
-                SpellManager.Q.Cast(targetSelect);
+                SpellManager.Q.CastSkill(targetSelect, HitChance.High);
             }
 
             if (Config.harassMenu.GetCheckbox("useWh") && SpellManager.W.IsReady() && targetSelect.IsValidTarget(SpellManager.W.Range))
             {
-                SpellManager.W.Cast(targetSelect);
+                SpellManager.W.CastSkill(targetSelect, HitChance.High);
             }
         }
 

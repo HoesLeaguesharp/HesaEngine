@@ -21,6 +21,7 @@ namespace SluttyEzreal
             AddMenuCheckBox("useW", "Use W", comboMenu);
             AddMenuCheckBox("useWA", "Use W On Allies", comboMenu);
             AddMenuCheckBox("useR", "Use R", comboMenu);
+            AddMenuSlider("rCount", "If R will Hit >=", comboMenu, 3, 0, 5);
 
             laneMenu = AddSMenu("Lane", Home);
             AddMenuSlider("minManaL", "Min Mana %", laneMenu, 30);
